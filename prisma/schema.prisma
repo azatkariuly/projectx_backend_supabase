@@ -10,21 +10,73 @@ datasource db {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Products {
-  id                  String   @id(map: "Product List_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  created_at          DateTime @default(now()) @db.Timestamptz(6)
+  id                  String       @id(map: "Product List_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at          DateTime     @default(now()) @db.Timestamptz(6)
   product_name        String?
   image_url           String[]
-  subdivision         String?
   product_description String?
-  product_price       Decimal? @default(0) @db.Decimal
+  product_price       Decimal?     @default(0) @db.Decimal
   product_color       String[]
   product_size        String[]
-  in_stock            Int?     @db.SmallInt
+  in_stock            Int?         @db.SmallInt
   sizing_information  String?
   shipping            String?
   returns             String?
-  division            gender   @default(Women)
+  division            gender       @default(Women)
+  subdivision         subdivision?
+
   @@map("products")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  emailVerified DateTime? @map("email_verified")
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
 enum gender {
@@ -33,54 +85,31 @@ enum gender {
   Kids
 }
 
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
-}
- 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@map("sessions")
-}
- 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String   @unique
-  password      String
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
- 
-  @@map("users")
-}
- 
-model VerificationToken {
-  identifier String
-  token      String
-  expires    DateTime
- 
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+/// This enum is commented in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+enum subdivision {
+  W_Outer_       @map("21 (W Outer)")
+  W_Bottoms_     @map("22 (W Bottoms)")
+  W_Shirts_      @map("23 (W Shirts)")
+  W_Cut___Sewn_  @map("24 (W Cut & Sewn)")
+  W_Knit_        @map("25 (W Knit)")
+  W_Accessories_ @map("26 (W Accessories)")
+  W_Innerwear_   @map("27 (W Innerwear)")
+  W_Loungewear_  @map("28 (W Loungewear)")
+  W_Dresses_     @map("29 (W Dresses)")
+  M_Outer_       @map("31 (M Outer)")
+  M_Bottoms_     @map("32 (M Bottoms)")
+  M_Shirts_      @map("33 (M Shirts)")
+  M_Cut___Sewn_  @map("34 (M Cut & Sewn)")
+  M_Knit_        @map("35 (M Knit)")
+  M_Accessories_ @map("36 (M Accessories)")
+  M_Innerwear_   @map("37 (M Innerwear)")
+  K_Outer_       @map("11 (K Outer)")
+  K_Bottoms_     @map("12 (K Bottoms)")
+  K_Shirts_      @map("13 (K Shirts)")
+  K_Cut___Sewn_  @map("14 (K Cut & Sewn)")
+  K_Knit_        @map("15 (K Knit)")
+  K_Accessories_ @map("16 (K Accessories)")
+  K_Innerwear_   @map("17 (K Innerwear)")
+  K_Loungewear_  @map("18 (K Loungewear)")
+  G_Dresses_     @map("19 (G Dresses)")
 }

@@ -8,7 +8,6 @@ export const signUp = async (req: Request, res: Response) => {
     const email = req.body.email;
     const name = req.body.name;
     const password = req.body.password;
-    console.log('1');
 
     try {
         const user = await getUser({email});
