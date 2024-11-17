@@ -20,7 +20,7 @@ export const signUp = async (req: Request, res: Response) => {
         const jwtUserId = signJWT({
             id: result.id
         })
-        const activationUrl = `${process.env.NEXTAUTH_URL}/login/activation/${jwtUserId}`;
+        const activationUrl = `${process.env.FRONTEND_URL}/login/activation/${jwtUserId}`;
         const body = compileActivationTemplate(result.name as string, activationUrl);
     
         await sendMail({to: result.email, subject: 'Activate Your Account', body: body});
@@ -59,6 +59,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const verifyEmail = async (req: Request, res: Response) => {
     const jwtUserId = req.params.id;
+    console.log('id', jwtUserId)
 
     try {
         const payload = verifyJWT(jwtUserId);
