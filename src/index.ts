@@ -9,7 +9,7 @@ import productsRoute from './products/products.route.js'
 const port = 8000
 
 const app = express()
-const allowedOrigins = ['*', 'http://localhost:3000', 'https://projectx-one-smoky.vercel.app'];
+const allowedOrigins = ['*', 'http://localhost:3000', 'https://projectx-one-smoky.vercel.app', 'https://projectx-test.vercel.app'];
 const corsConfig = {
     origin: allowedOrigins,
     credentials: true,
