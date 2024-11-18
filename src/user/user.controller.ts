@@ -8,6 +8,7 @@ export const signUp = async (req: Request, res: Response) => {
     const email = req.body.email;
     const name = req.body.name;
     const password = req.body.password;
+    const image = req.body.image;
 
     try {
         const user = await getUser({email});
@@ -16,7 +17,7 @@ export const signUp = async (req: Request, res: Response) => {
             return
         }
 
-        const result = await createUser({email, name, password});
+        const result = await createUser({email, name, password, image});
         const jwtUserId = signJWT({
             id: result.id
         })
