@@ -39,13 +39,13 @@ export const login = async (req: Request, res: Response) => {
     try {
         const user = await getUser({email});
         if (!user) {
-            res.status(400).send('Email or password is not correct')
+            res.status(400).send('Email is not registered')
             return
         }
 
         const isPasswordCorrect = await bcrypt.compare(pass_word, user.password);
         if (!isPasswordCorrect) {
-            res.status(400).send('Email or password is not correct')
+            res.status(400).send('Password is not correct')
             return
         }
 
