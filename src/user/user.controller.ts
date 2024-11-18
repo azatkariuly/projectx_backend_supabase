@@ -39,53 +39,55 @@ export const login = async (req: Request, res: Response) => {
     try {
         const user = await getUser({email});
         if (!user) {
-            res.status(400).send("Email or password is not correct")
+            res.status(400).send('Email or password is not correct')
             return
         }
 
         const isPasswordCorrect = await bcrypt.compare(pass_word, user.password);
         if (!isPasswordCorrect) {
-            res.status(400).send("Email or password is not correct")
+            res.status(400).send('Email or password is not correct')
             return
         }
 
         const { password, ...userWithoutPass } = user;
-        res.json(userWithoutPass)
+        res.status(200).send(userWithoutPass)
     } catch (e) {
-        res.status(500).send('Something went wrong');
-        return
+        res.status(500).send('Internal server error');
     }
 }
 
 export const verifyEmail = async (req: Request, res: Response) => {
     const jwtUserId = req.params.id;
-    console.log('id', jwtUserId)
+
+    if (!jwtUserId) {
+        res.status(400).send('Invalid or missing ID in the request');
+        return
+    }
 
     try {
         const payload = verifyJWT(jwtUserId);
 
         const userId = payload?.id;
         if (!userId) {
-            res.status(400).send("User does not exist")
+            res.status(404).send('Unable to confirm email')
             return
         }
     
         const user = await getUserById({userId});
         if (!user) {
-            res.status(400).send("User does not exist")
+            res.status(404).send('User does not exist')
             return
         }
     
         if (user.emailVerified) {
-            res.status(400).send("User does not exist")
+            res.status(400).send('User email is already verified')
             return
         }
     
-        const result = await verifyUserEmail(userId);
-        res.json(result)
+        const result = await verifyUserEmail({userId});
+        res.status(200).send('Email verified successfully')
     } catch (e) {
-        res.status(500).send('Something went wrong');
-        return
+        res.status(500).send('Internal server error');
     }
     
 
